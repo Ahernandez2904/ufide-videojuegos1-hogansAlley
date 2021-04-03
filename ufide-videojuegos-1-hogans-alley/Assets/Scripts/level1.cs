@@ -22,6 +22,7 @@ public class level1 : MonoBehaviour {
     /*x de round y miss digits*/ float r1x = 0.35f, r2x = -0.35f; float m1x = 1.1f, m2x = 0.7f;
     /*x de time digits*/ float time1x = 0.4f, time2x = -0.4f;
     /*y de todos*/ float scoreY = -4.3f, topY = -4.3f, roundY = -4.15f, missY = -4.77f, timeY = 4.15f, missLabelY = -2f;
+    /*x y y de miss en gameover*/ float missYGO = 0.6f, m2xGO = 0.8f, m1xGO = 1.2f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // MIS GAMEOBJECTS                                                                          //
@@ -29,10 +30,11 @@ public class level1 : MonoBehaviour {
 
     public GameObject GangA, GangB, GangC, Lady, Professor, Police; GameObject[] guys;
     GameObject scoreDigit3, scoreDigit4, scoreDigit5, scoreDigit6; GameObject topDigit3, topDigit4, topDigit5, topDigit6;
-    GameObject missDigit1, missDigit2; GameObject roundDigit1, roundDigit2; GameObject timeDigit1, timeDigit2;
+    GameObject missDigit1, missDigit2, missPatchClone; GameObject roundDigit1, roundDigit2, roundPatchClone; GameObject timeDigit1, timeDigit2;
     public GameObject greenNumber, whiteNumber, missPatch, roundPatch;
     public GameObject sharpshooterText, superSharphooterText; GameObject sharpshooterTextClone, superSharphooterTextClone;
     public GameObject stage, leftEdge, rightEdge, missLabel; GameObject leftEdgeClone, rightEdgeClone;
+    GameObject missDigit1GO, missDigit2GO;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES DE INICIO                                                                      //
@@ -91,25 +93,15 @@ public class level1 : MonoBehaviour {
 
     /*Listo*/ public void updateRound() {
         updateNumber(roundDigit1, round % 10);
-        if(round > 9 && roundDigit2 == null) { createSecondRoundNumber(); } 
-        if(round > 9) { updateNumber(roundDigit2, (round / 10) % 10); }
+        if(round > 9 && roundDigit2 == null) { createSecondRoundNumber(); } if(round > 9) { updateNumber(roundDigit2, (round / 10) % 10); }
     }
 
     /*Listo*/ public void updateMissed() { 
-        if (missed < 10) { updateNumber(missDigit1, missed); } else { updateNumber(missDigit1, missed-10); } 
+        updateNumber(missDigit1, missed % 10);
+        if(missed > 9 && missDigit2 == null) { createSecondRoundNumber(); } if(missed > 9) { updateNumber(missDigit2, (missed / 10) % 10); }
     }
 
-    /*Listo*/ public void updateTime() {
-        updateNumber(timeDigit1, time % 10); updateNumber(timeDigit2, (time / 10) % 10);
-    }
-
-    /*Listo*/ public void dontDestroy() {
-        DontDestroyOnLoad(scoreDigit3); DontDestroyOnLoad(scoreDigit4); DontDestroyOnLoad(scoreDigit5); DontDestroyOnLoad(scoreDigit6);
-        DontDestroyOnLoad(topDigit3); DontDestroyOnLoad(topDigit4); DontDestroyOnLoad(topDigit5); DontDestroyOnLoad(topDigit6);
-        DontDestroyOnLoad(roundDigit1); if (roundDigit2 != null) { DontDestroyOnLoad(roundDigit2); DontDestroyOnLoad(roundPatch); }  
-        DontDestroyOnLoad(missDigit1); if (missDigit2 != null) { DontDestroyOnLoad(missDigit2); DontDestroyOnLoad(missPatch);  } 
-        DontDestroyOnLoad(timeDigit1); DontDestroyOnLoad(timeDigit2);
-    }
+    /*Listo*/ public void updateTime() { updateNumber(timeDigit1, time % 10); updateNumber(timeDigit2, (time / 10) % 10); }
 
     /*Listo*/ public void updateNumber(GameObject go, int i) {
         if (i == 0) { go.GetComponent<Animator>().Play("is0"); }
@@ -190,18 +182,33 @@ public class level1 : MonoBehaviour {
 
     /*Listo*/ public void createSecondMissNumber() {
         /*2 Miss*/ missDigit2 = Instantiate (whiteNumber, new Vector3 (m2x, missY, 0f), Quaternion.identity);
-        /*Esconde "="*/ Instantiate(missPatch);
+        /*Esconde "="*/ missPatchClone = Instantiate(missPatch);
         /*Lo pone en valor 1.*/  missDigit2.GetComponent<Animator>().Play("is1");
     }
 
     /*Listo*/ public void createSecondRoundNumber() {
         /*2 Round*/ roundDigit2 = Instantiate (greenNumber, new Vector3 (r2x, roundY, 0f), Quaternion.identity);
-        /*Esconde "R="*/ Instantiate(roundPatch);
-        /*Lo pone en valor 1.*/  roundDigit2.GetComponent<Animator>().Play("is1");
+        /*Esconde "R="*/ roundPatchClone = Instantiate(roundPatch);
+        /*Lo pone en valor 1.*/ roundDigit2.GetComponent<Animator>().Play("is1");
     }
 
     /*Listo*/ public void createMiss(int i) {
         /*Miss*/ GameObject missClone = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
+    }
+
+    /*Listo*/ public void createGameOverMiss(){
+        missDigit1GO = Instantiate (whiteNumber, new Vector3 (m1xGO, missYGO, 0f), Quaternion.identity);
+        missDigit2GO = Instantiate (whiteNumber, new Vector3 (m2xGO, missYGO, 0f), Quaternion.identity);
+        updateNumber(missDigit1GO, missed%10); updateNumber(missDigit2GO, (missed/10) %10); 
+    }
+
+    /*Listo*/ public void dontDestroy() {
+        DontDestroyOnLoad(scoreDigit3); DontDestroyOnLoad(scoreDigit4); DontDestroyOnLoad(scoreDigit5); DontDestroyOnLoad(scoreDigit6);
+        DontDestroyOnLoad(topDigit3); DontDestroyOnLoad(topDigit4); DontDestroyOnLoad(topDigit5); DontDestroyOnLoad(topDigit6);
+        DontDestroyOnLoad(roundDigit1); if (roundDigit2 != null) { DontDestroyOnLoad(roundDigit2); DontDestroyOnLoad(roundPatchClone); }  
+        DontDestroyOnLoad(missDigit1); if (missDigit2 != null) { DontDestroyOnLoad(missDigit2); DontDestroyOnLoad(missPatchClone);  } 
+        DontDestroyOnLoad(timeDigit1); DontDestroyOnLoad(timeDigit2);
+        DontDestroyOnLoad(missDigit1GO); DontDestroyOnLoad(missDigit2GO);
     }
 
     /*Listo*/ public void createEdge() { rightEdgeClone = Instantiate(rightEdge); leftEdgeClone = Instantiate(leftEdge); }
@@ -244,8 +251,8 @@ public class level1 : MonoBehaviour {
     }
 
     public void gameOver() {
-        /*Pasar valores score, miss, top*/ 
         /*Miss se convierte en mayor a 9*/ createSecondMissNumber();
+        /*Crea miss de game over*/ createGameOverMiss();
         /*No me destruyan estos objectos*/ dontDestroy();
         /*Cargar Escena Game Over*/ SceneManager.LoadScene("GameOver");
     }

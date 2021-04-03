@@ -5,24 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour {
 
+    GameObject[] wn = new GameObject[20];
+    GameObject[] gn = new GameObject[20];
+
     void Start() {
        StartCoroutine (Esperar(5));
     }
 
     IEnumerator Esperar(int s) { 
         yield return new WaitForSeconds(s);
+        destroyOldGameObjects();
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void destruirGameObjectsAnteriores(){
-        GameObject[] wn = GameObject.FindGameObjectsWithTag("WhiteNumber(Clone)");
-        GameObject[] gn = GameObject.FindGameObjectsWithTag("GreenNumber(Clone)");
-        GameObject[] rp = GameObject.FindGameObjectsWithTag("PatchRound(Clone)");
-        GameObject[] mp = GameObject.FindGameObjectsWithTag("PatchMiss(Clone)");
-        foreach(GameObject go in wn) { Destroy(go); }
-        foreach(GameObject go in gn) { Destroy(go); }
-        foreach(GameObject go in rp) { Destroy(go); }
-        foreach(GameObject go in mp) { Destroy(go); }
+    public void destroyOldGameObjects(){
+        wn = GameObject.FindGameObjectsWithTag("WhiteNumber(Clone)"); foreach(GameObject go in wn) { Destroy(go); }
+        gn = GameObject.FindGameObjectsWithTag("GreenNumber(Clone)"); foreach(GameObject go in gn) { Destroy(go); }
+        GameObject rp = GameObject.Find("PatchRound(Clone)"); if(rp != null) { Destroy(rp); }
+        GameObject mp = GameObject.Find("PatchMiss(Clone)");  if(mp != null) { Destroy(mp); }
     }
 
 }
