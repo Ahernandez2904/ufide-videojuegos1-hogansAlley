@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1656491913846419298}
   m_Layer: 0
   m_Name: Professor
-  m_TagString: Untagged
+  m_TagString: Good
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -7,6 +7,8 @@ TagManager:
   - Undefined
   - WhiteNumber(Clone)
   - GreenNumber(Clone)
+  - Good
+  - Bad
   layers:
   - Default
   - TransparentFX

@@ -12,7 +12,7 @@ public class level1 : MonoBehaviour {
 
     AudioManagerController audioManager;
     int totalBadGuys = 0, randomNumberGuy; bool[] isBadGuy = {false, false, false}; string[] guy;
-    public int round = 1, score = 0, missed = 0, top, time;
+    public int round = 1, score = 0, missed = 0, time; public static int top;
     public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
     /*Tiempo y hasta donde puede bajar*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; 
     /*Numeros aleatorios*/ int randomNumber = 0; int[] randomNumberGuyArr; double randomTime = 0.00;
