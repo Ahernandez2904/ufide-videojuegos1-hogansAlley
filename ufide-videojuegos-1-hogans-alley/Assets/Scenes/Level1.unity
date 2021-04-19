@@ -406,11 +406,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b74dd96f89f9d409aa3e1993728acb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEntering: 0
+  isLeaving: 0
   round: 1
   score: 0
   missed: 0
-  top: 0
-  time: 0
+  timetime: 0
   sharpshooterLevel: 15
   superSharpshooterLevel: 30
   maxTime: 2.5
@@ -434,6 +435,8 @@ MonoBehaviour:
   sharpshooterText: {fileID: 2508501603209324874, guid: 339489101a717cc4885aed7e7ecdb598,
     type: 3}
   superSharphooterText: {fileID: 1418710253676372688, guid: dcb9bc490b6dbcd4caf1495b52640f03,
+    type: 3}
+  blueScreen: {fileID: 7161954384281516820, guid: 3e4e4b4079e05ab4ebd1d9e1f671ab3a,
     type: 3}
   stage: {fileID: 1688821762}
   leftEdge: {fileID: 8491794404169705666, guid: cee1c2cf425145946a73905b037734bf,

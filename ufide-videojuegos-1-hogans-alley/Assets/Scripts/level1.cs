@@ -12,7 +12,7 @@ public class level1 : MonoBehaviour {
 
     AudioManagerController audioManager;
     int totalBadGuys = 0, randomNumberGuy; bool[] isBadGuy = {false, false, false}; string[] guy; 
-    float moveSpeed = 2F; public bool isEntering = false, isLeaving = false;
+    float moveSpeed = 2F; public bool areEntering = false, areLeaving = false, areInvincible = true;
     public int round = 1, score = 0, missed = 0, timetime; public static int top;  
     public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
     /*Tiempo y hasta donde puede bajar*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; 
@@ -33,7 +33,7 @@ public class level1 : MonoBehaviour {
     GameObject scoreDigit3, scoreDigit4, scoreDigit5, scoreDigit6; GameObject topDigit3, topDigit4, topDigit5, topDigit6;
     GameObject missDigit1, missDigit2, missPatchClone; GameObject roundDigit1, roundDigit2, roundPatchClone; GameObject timeDigit1, timeDigit2;
     public GameObject greenNumber, whiteNumber, missPatch, roundPatch;
-    public GameObject sharpshooterText, superSharphooterText; GameObject sharpshooterTextClone, superSharphooterTextClone;
+    public GameObject sharpshooterText, superSharphooterText, blueScreen; GameObject sharpshooterTextClone, superSharphooterTextClone, blueScreenClone;
     public GameObject stage, leftEdge, rightEdge, missLabel; GameObject leftEdgeClone, rightEdgeClone;
     GameObject missDigit1GO, missDigit2GO;
 
@@ -42,8 +42,8 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Start() {
-        /*Create GameObjects*/ createEdge(); createNumbers();
-        /*Start game*/ StartCoroutine (showRound1());
+        createEdge(); createNumbers();
+        StartCoroutine (showRound1());
         //gameOver();
     }
 
@@ -124,16 +124,16 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Listo*/ public int generateRandomTime() {
-        /*Genera número aleatorio*/ timetime = UnityEngine.Random.Range( Convert.ToInt32((maxTime*10)-10), Convert.ToInt32(maxTime*10) );
-        /*Genera tiempo en segundos*/ randomTime = timetime/10;
-        /*Tiempo debe ser mayor al mínimo*/ if (randomTime < minTime ) { randomTime = minTime; timetime = Convert.ToInt32(randomTime)*10; }
-        /*Menor tiempo progresivamente*/ if (maxTime > minMaxTime) {maxTime = maxTime - 0.05; }
-        /*Retorna tiempo x10*/ return timetime;
+        timetime = UnityEngine.Random.Range( Convert.ToInt32((maxTime*10)-10), Convert.ToInt32(maxTime*10) );
+        randomTime = timetime/10;
+        if (randomTime < minTime ) { randomTime = minTime; timetime = Convert.ToInt32(randomTime)*10; }
+        if (maxTime > minMaxTime) { maxTime = maxTime - 0.05; }
+        return timetime;
     }
 
     /*Listo*/ public void generateGoodGuy(int i) {
-        /*Genera aleatorios*/ randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
-        /*No se puede repetir en tanda*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy) || 
+        randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
+        /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy) || 
         (isBadGuy[(i%3)-2] == false && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
         (i%3==1 && (isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
         /*Generate lady*/ if (randomNumberGuy == 0) { guys[i] = Instantiate(Lady, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
@@ -142,8 +142,8 @@ public class level1 : MonoBehaviour {
     }
 
     /*Listo*/ public void generateBadGuy(int i) {
-        /*Genera aleatorios*/ randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
-        /*No se puede repetir en tanda*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy) || 
+        randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
+        /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy) || 
         (isBadGuy[(i%3)-2] && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
         (i%3==1 && (isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
         /*Generate Gang A*/ if (randomNumberGuy == 0) { guys[i] = Instantiate(GangA, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
@@ -152,19 +152,19 @@ public class level1 : MonoBehaviour {
     }
 
     /*Listo*/ public void generateGuys() {
-        /*Genera al primero*/ if (isBadGuy[0]) { generateBadGuy(((round-1)*3) + 0); } else { generateGoodGuy(((round-1)*3) + 0); }
-        /*Genera al segundo*/ if (isBadGuy[1]) { generateBadGuy(((round-1)*3) + 1); } else { generateGoodGuy(((round-1)*3) + 1); }
-        /*Genera al tercero*/ if (isBadGuy[2]) { generateBadGuy(((round-1)*3) + 2); } else { generateGoodGuy(((round-1)*3) + 2); }
+        if (isBadGuy[0]) { generateBadGuy(((round-1)*3) + 0); } else { generateGoodGuy(((round-1)*3) + 0); }
+        if (isBadGuy[1]) { generateBadGuy(((round-1)*3) + 1); } else { generateGoodGuy(((round-1)*3) + 1); }
+        if (isBadGuy[2]) { generateBadGuy(((round-1)*3) + 2); } else { generateGoodGuy(((round-1)*3) + 2); }
     }
 
     /*Listo*/ public void guysPositions () { 
-        /*Decide quienes son bad guys*/ for (int i = 0; i < 3; i++){ if (UnityEngine.Random.Range(0,2) == 0) { totalBadGuys++; isBadGuy[i] = true; } else { isBadGuy[i] = false; } }
+        for (int i = 0; i < 3; i++){ if (UnityEngine.Random.Range(0,2) == 0) { totalBadGuys++; isBadGuy[i] = true; } else { isBadGuy[i] = false; } }
         /*Si no hay bad guys, genera uno*/ if (totalBadGuys == 0) { isBadGuy[UnityEngine.Random.Range(0,3)] = true; totalBadGuys++; }
         /*Si hay tres bad guys, elimina uno*/ if (totalBadGuys == 3) { isBadGuy[UnityEngine.Random.Range(0,3)] = false; totalBadGuys--; }
     }
 
     public void guysEnter() {
-        /*Si no deben moverse, no lo hagan*/ if (isEntering == false) { return; }
+        /*Si no deben moverse, no lo hagan*/ if (areEntering == false) { return; }
         int i = (round-1)*3;
         guys[i+0].transform.position = Vector3.MoveTowards(guys[i+0].transform.position, new Vector3(xPos[(i+0)%3], yPosGuy, 0.1f), moveSpeed * Time.deltaTime);
         guys[i+1].transform.position = Vector3.MoveTowards(guys[i+1].transform.position, new Vector3(xPos[(i+1)%3], yPosGuy, 0.1f), moveSpeed * Time.deltaTime);
@@ -172,11 +172,35 @@ public class level1 : MonoBehaviour {
     }
 
     public void guysLeave() {
-        /*Si no deben moverse, no lo hagan*/ if (isLeaving == false || round == 1) { return; }
+        /*Si no deben moverse, no lo hagan*/ if (areLeaving == false || round == 1) { return; }
         int i = (round-2)*3;
         guys[i+0].transform.position = Vector3.MoveTowards(guys[i+0].transform.position, new Vector3(6, yPosGuy, 0.1f), moveSpeed * Time.deltaTime);
         guys[i+1].transform.position = Vector3.MoveTowards(guys[i+1].transform.position, new Vector3(6, yPosGuy, 0.1f), moveSpeed * Time.deltaTime);
         guys[i+2].transform.position = Vector3.MoveTowards(guys[i+2].transform.position, new Vector3(6, yPosGuy, 0.1f), moveSpeed * Time.deltaTime);
+    }
+
+    public void moveAnimator() {
+        int i = (round-1)*3; 
+        guys[i+0].GetComponent<Animator>().Play("isMoving");
+        guys[i+1].GetComponent<Animator>().Play("isMoving");
+        guys[i+2].GetComponent<Animator>().Play("isMoving");
+        if (round == 1) { return; }
+        int j = (round-2)*3;
+        guys[j+0].GetComponent<Animator>().Play("isMoving");
+        guys[j+1].GetComponent<Animator>().Play("isMoving");
+        guys[j+2].GetComponent<Animator>().Play("isMoving");
+    }
+
+    public void idleAnimator() {
+        int i = (round-1)*3; 
+        guys[i+0].GetComponent<Animator>().Play("isIdle");
+        guys[i+1].GetComponent<Animator>().Play("isIdle");
+        guys[i+2].GetComponent<Animator>().Play("isIdle");
+        if (round == 1) { return; }
+        int j = (round-2)*3;
+        guys[j+0].GetComponent<Animator>().Play("isIdle");
+        guys[j+1].GetComponent<Animator>().Play("isIdle");
+        guys[j+2].GetComponent<Animator>().Play("isIdle");
     }
 
     public void destroyOldGuys() {
@@ -211,13 +235,13 @@ public class level1 : MonoBehaviour {
     }
 
     /*Listo*/ public void createSecondRoundNumber() {
-        /*2 Round*/ roundDigit2 = Instantiate (greenNumber, new Vector3 (r2x, roundY, 0f), Quaternion.identity);
-        /*Esconde "R="*/ roundPatchClone = Instantiate(roundPatch);
-        /*Lo pone en valor 1.*/ roundDigit2.GetComponent<Animator>().Play("is1");
+        roundDigit2 = Instantiate (greenNumber, new Vector3 (r2x, roundY, 0f), Quaternion.identity);
+        roundPatchClone = Instantiate(roundPatch);
+        roundDigit2.GetComponent<Animator>().Play("is1");
     }
 
     /*Listo*/ public void createMiss(int i) {
-        /*Miss*/ GameObject missClone = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
+        GameObject missClone = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
     }
 
     /*Listo*/ public void createGameOverMiss(){
@@ -244,45 +268,53 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Lista*/ IEnumerator showRound1() {
-        /*Esperar 3 segundos*/ yield return new WaitForSeconds(5);
-        /*Destruir objetos*/ Destroy(GameObject.Find("Round"));
-        /*Empieza la ronda*/ StartCoroutine(newRound());
+        yield return new WaitForSeconds(5);
+        Destroy(GameObject.Find("Round"));
+        StartCoroutine(newRound());
     }
 
     IEnumerator newRound() {
-        /*Decide las posiciones de los personajes*/ guysPositions();
-        /*Genera a las tres personas*/ generateGuys();
-        /*Cambia el tiempo por ronda*/ generateRandomTime();
-        /*Moverlos a la posición*/ isEntering = true; isLeaving = true;
-        yield return new WaitForSeconds(10);
-        /*Moverlos a la posición*/ isEntering = false; isLeaving = false;
-        /*Destruye los objetos anteriores*/ destroyOldGuys();
-        /*Te llama super sharpshooter en ronda 30*/ if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); }
-        /*Te llama sharpshooter en ronda 15*/ if (round == sharpshooterLevel) { StartCoroutine(sharpshooter()); }
-        /*Aumenta ronda y revisa si son 10*/ round++; if(round == 10) { createSecondRoundNumber(); }
-        /*Set totalBadGuys a cero*/ totalBadGuys = 0;
-        /*Nueva ronda*/ if (missed > 9 || round == 100) { gameOver(); } else { StartCoroutine(newRound()); }
+        guysPositions(); generateGuys(); generateRandomTime();
+        audioManager.Play("move");
+        areEntering = true; areLeaving = true;
+        moveAnimator();
+        yield return new WaitForSeconds(6);
+        areEntering = false; areLeaving = false;
+        idleAnimator();
+        destroyOldGuys();
+        yield return new WaitForSeconds(0.8f); /*Demole chance a que se den vuelta*/
+        areInvincible = false;
+        yield return new WaitForSeconds(3f); /*Chance extra para que me de tiempo de reaccionar*/
+        yield return new WaitForSeconds((float)randomTime);
+        areInvincible = true;
+        if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
+        if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
+        round++; if(round == 10) { createSecondRoundNumber(); }
+        totalBadGuys = 0;
+        if (missed > 9 || round == 99) { gameOver(); } else { StartCoroutine(newRound()); }
     }
 
     /*Listo*/ IEnumerator sharpshooter() {
-        /*Crea gameobjects*/ sharpshooterTextClone = Instantiate(sharpshooterText);
-        /*Play sharpshooter.mp3*/ audioManager.Play("sharpshooter");
-        /*Espera a que termine la canción*/ yield return new WaitForSeconds(4);
-        /*Destruye el elemento*/ Destroy(sharpshooterTextClone);
+        sharpshooterTextClone = Instantiate(sharpshooterText); blueScreenClone = Instantiate(blueScreen); 
+        audioManager.Play("sharpshooter");
+        yield return new WaitForSeconds(5);
+        Destroy(sharpshooterTextClone); Destroy(blueScreenClone); 
     }
 
     /*Listo*/ IEnumerator superSharpshooter() {
-        /*Crea gameobjects*/ sharpshooterTextClone = Instantiate(sharpshooterText); superSharphooterTextClone = Instantiate(superSharphooterText);
-        /*Play sharpshooter.mp3*/ audioManager.Play("sharpshooter");
-        /*Espera a que termine la canción*/ yield return new WaitForSeconds(4);
-        /*Destruye gameobjects*/ Destroy(sharpshooterTextClone); Destroy(superSharphooterTextClone); 
+        sharpshooterTextClone = Instantiate(sharpshooterText); 
+        superSharphooterTextClone = Instantiate(superSharphooterText); 
+        blueScreenClone = Instantiate(blueScreen); 
+        audioManager.Play("sharpshooter");
+        yield return new WaitForSeconds(5);
+        Destroy(sharpshooterTextClone); Destroy(superSharphooterTextClone); Destroy(blueScreenClone); 
     }
 
     public void gameOver() {
-        /*Miss se convierte en mayor a 9*/ createSecondMissNumber();
-        /*Crea miss de game over*/ createGameOverMiss();
-        /*No me destruyan estos objectos*/ dontDestroy();
-        /*Cargar Escena Game Over*/ SceneManager.LoadScene("GameOver");
+        createSecondMissNumber();
+        createGameOverMiss();
+        dontDestroy();
+        SceneManager.LoadScene("GameOver");
     }
 
 }
