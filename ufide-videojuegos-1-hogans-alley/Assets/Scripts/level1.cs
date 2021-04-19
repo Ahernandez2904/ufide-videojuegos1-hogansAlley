@@ -15,7 +15,7 @@ public class level1 : MonoBehaviour {
     float moveSpeed = 2F; public bool areEntering = false, areLeaving = false, areInvincible = true;
     public int round = 1, score = 0, missed = 0, timetime; public static int top;  
     public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
-    /*Tiempo y hasta donde puede bajar*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; 
+    /*Tiempo y hasta donde puede bajar*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; public float extraTime = 3f;
     /*Numeros aleatorios*/ int randomNumber = 0; int[] randomNumberGuyArr; double randomTime = 0.00;
     /*Posiciones*/ float[] xPos = {-3.3f, 0f, 3.3f}; int xPosGuyStart = -6, xPosGuyEnd = 6, yPosMiss = -2; float yPosGuy =0.43f;
     /*x de score digits*/ float s3x = -3.55f, s4x = -3.95f, s5x = -4.35f, s6x = -4.75f;
@@ -62,20 +62,36 @@ public class level1 : MonoBehaviour {
 // FUNCIONES DE DISPARO                                                                     //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void missedShot () {
-
-    }
-
     public void shot () {
         if (Input.GetMouseButtonDown(0)) {
             Vector2 raycastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(raycastPos, Vector2.zero);
-            if(hit.collider!=null) { Debug.Log(hit.collider.gameObject.name); }
+            if(hit.collider!=null && areInvincible == false) { 
+                //Debug.Log(hit.collider.gameObject.name); 
+                if (hit.collider.gameObject.tag == "Good") { goodGuyShot(hit); }
+                if (hit.collider.gameObject.tag == "Bad")  { badGuyShot(hit);  }
+            }
         }
     }
 
-    public void successfulShot () {
+    public void badGuyShot (RaycastHit2D hit) {
+        hit.collider.gameObject.GetComponent<Animator>().Play("isShot");
+        //if ()
+        //Debug.Log(hit.collider.gameObject.name);
+    }
 
+    public void goodGuyShot (RaycastHit2D hit) {
+        hit.collider.gameObject.GetComponent<Animator>().Play("isShot");
+        stage.GetComponent<Animator>().Play("isRed");
+        destroyEdge();
+        areInvincible = true;
+        missed++;
+    }
+
+    public void resetStage() { stage.GetComponent<Animator>().Play("isIdle"); createEdge(); }
+
+    public void badGuyNotShot () { 
+        //
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +300,7 @@ public class level1 : MonoBehaviour {
         destroyOldGuys();
         yield return new WaitForSeconds(0.8f); /*Demole chance a que se den vuelta*/
         areInvincible = false;
-        yield return new WaitForSeconds(3f); /*Chance extra para que me de tiempo de reaccionar*/
+        yield return new WaitForSeconds(extraTime); /*Chance extra para que me de tiempo de reaccionar*/
         yield return new WaitForSeconds((float)randomTime);
         areInvincible = true;
         if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
