@@ -10,8 +10,9 @@ public class level1 : MonoBehaviour {
 // VARIABLES PRINCIPALES                                                                    //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    AudioManagerController audioManager;
-    int totalBadGuys = 0, randomNumberGuy; bool[] isBadGuy = {false, false, false}; string[] guy; 
+    AudioManagerController audioManager; AnimatorClipInfo[] currentClipInfo;
+    string[] guysAnimations = {"error","error","error"}; bool[] wasFastShot = {false, false, false};
+    int totalBadGuys = 0, randomNumberGuy; bool[] isBadGuy = {false, false, false}, isShot; string[] guy; 
     float moveSpeed = 2F; public bool areEntering = false, areLeaving = false, areInvincible = true;
     public int round = 1, score = 0, missed = 0, timetime; public static int top;  
     public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
@@ -56,6 +57,7 @@ public class level1 : MonoBehaviour {
         audioManager = FindObjectOfType<AudioManagerController>();
         randomNumberGuyArr = new int[300];
         guys = new GameObject[300];
+        isShot = new bool[300];
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,8 +78,7 @@ public class level1 : MonoBehaviour {
 
     public void badGuyShot (RaycastHit2D hit) {
         hit.collider.gameObject.GetComponent<Animator>().Play("isShot");
-        //if ()
-        //Debug.Log(hit.collider.gameObject.name);
+
     }
 
     public void goodGuyShot (RaycastHit2D hit) {
@@ -85,14 +86,25 @@ public class level1 : MonoBehaviour {
         stage.GetComponent<Animator>().Play("isRed");
         destroyEdge();
         areInvincible = true;
-        missed++;
     }
 
-    public void resetStage() { stage.GetComponent<Animator>().Play("isIdle"); createEdge(); }
+    /*Listo*/ IEnumerator fastShot(){
+        yield return new WaitForSeconds(1);
+        updateGuysAnimations();
+        int i = (round-1)*3;
+        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Bad")  { wasFastShot[0] = true; }
+        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Bad")  { wasFastShot[1] = true; }
+        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad")  { wasFastShot[2] = true; }
+    } 
 
-    public void badGuyNotShot () { 
-        //
+    /*Listo*/ public void resetStage() { 
+        stage.GetComponent<Animator>().Play("isIdle"); 
+        createEdge(); 
     }
+
+    public void resetWasFastShot() { 
+        wasFastShot[0] = false; wasFastShot[1] = false; wasFastShot[2] = false; 
+        }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES DE ACTUALIZAR DATOS                                                         u  //
@@ -225,6 +237,16 @@ public class level1 : MonoBehaviour {
         Destroy(guys[i+0]); Destroy(guys[i+1]); Destroy(guys[i+2]);
     }
 
+    public void updateGuysAnimations () { 
+        int i = (round-1)*3;
+        currentClipInfo = guys[i+0].GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        guysAnimations[0] = currentClipInfo[0].clip.name;
+        currentClipInfo = guys[i+1].GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        guysAnimations[1] = currentClipInfo[0].clip.name;
+        currentClipInfo = guys[i+2].GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        guysAnimations[2] = currentClipInfo[0].clip.name;
+    }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // CREACIÓN DE GAMEOBJECTS                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +306,8 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Lista*/ IEnumerator showRound1() {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(2);
+        //audioManager.StopAllAudio();
         Destroy(GameObject.Find("Round"));
         StartCoroutine(newRound());
     }
@@ -300,14 +323,38 @@ public class level1 : MonoBehaviour {
         destroyOldGuys();
         yield return new WaitForSeconds(0.8f); /*Demole chance a que se den vuelta*/
         areInvincible = false;
+        StartCoroutine(fastShot());
         yield return new WaitForSeconds(extraTime); /*Chance extra para que me de tiempo de reaccionar*/
         yield return new WaitForSeconds((float)randomTime);
         areInvincible = true;
+        checkRound();
         if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
         if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
         round++; if(round == 10) { createSecondRoundNumber(); }
         totalBadGuys = 0;
         if (missed > 9 || round == 99) { gameOver(); } else { StartCoroutine(newRound()); }
+    }
+
+    public void checkRound() {
+        int i = (round-1)*3;
+        updateGuysAnimations();
+
+        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Good") { missed++; }
+        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Good") { missed++; }
+        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Good") { missed++; }
+        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad")  { missed++; }
+        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad")  { missed++; }
+        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad")  { missed++; }
+
+        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Bad")  { 
+            if(wasFastShot[0] == true) { score = score + 400; } score = score + 100; }
+        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Bad")  { 
+            if(wasFastShot[1] == true) { score = score + 400; } score = score + 100; }
+        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad")  { 
+            if(wasFastShot[2] == true) { score = score + 400; } score = score + 100; }
+
+        resetWasFastShot();
+        //Debug.Log(guysAnimations[0]); Debug.Log(guys[i+0].tag);
     }
 
     /*Listo*/ IEnumerator sharpshooter() {
@@ -332,5 +379,4 @@ public class level1 : MonoBehaviour {
         dontDestroy();
         SceneManager.LoadScene("GameOver");
     }
-
 }

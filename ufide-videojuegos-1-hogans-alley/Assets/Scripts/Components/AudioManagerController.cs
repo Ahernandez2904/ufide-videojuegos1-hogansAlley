@@ -29,4 +29,10 @@ public class AudioManagerController : MonoBehaviour {
         Sound sonido = Array.Find(sonidos, i => i.nombre == nombre);
         if (sonido == null) { return; } else { sonido.source.Play(); }
     }
+ 
+    /*public void StopAllAudio() {
+        foreach (Sound sonido in sonidos) {
+            gameObject.AddComponent<AudioSource>().Stop();
+        } //No me funcionó :(
+    }*/
 }
