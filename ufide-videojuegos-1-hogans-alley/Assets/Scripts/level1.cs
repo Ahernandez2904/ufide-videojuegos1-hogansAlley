@@ -37,13 +37,17 @@ public class level1 : MonoBehaviour {
 // MIS GAMEOBJECTS                                                                          //
 //////////////////////////////////////////////////////////////////////////////////////////////    
 
-    public GameObject GangA, GangB, GangC, Lady, Professor, Police; GameObject[] guys; 
-    GameObject scoreDigit3, scoreDigit4, scoreDigit5, scoreDigit6; GameObject topDigit3, topDigit4, topDigit5, topDigit6;
-    GameObject missDigit1, missDigit2, missPatchClone; GameObject roundDigit1, roundDigit2, roundPatchClone; GameObject timeDigit1, timeDigit2;
-    public GameObject greenNumber, whiteNumber, missPatch, roundPatch;
-    public GameObject sharpshooterText, superSharphooterText, blueScreen; GameObject sharpshooterTextClone, superSharphooterTextClone, blueScreenClone;
-    public GameObject stage, leftEdge, rightEdge, missLabel; GameObject leftEdgeClone, rightEdgeClone;
-    GameObject missDigit1GO, missDigit2GO;
+    /*Edge*/ public GameObject stage, leftEdge, rightEdge, missLabel; GameObject leftEdgeClone, rightEdgeClone;
+    /*Guys*/ public GameObject GangA, GangB, GangC, Lady, Professor, Police; GameObject[] guys; 
+    /*Miss Digit*/ GameObject missDigit1, missDigit2, missPatchClone; 
+    /*Miss Digit (Game Over)*/ GameObject missDigit1GO, missDigit2GO;
+    /*Numbers Clone*/ public GameObject greenNumber, whiteNumber, missPatch, roundPatch;
+    /*Round*/ GameObject roundDigit1, roundDigit2, roundPatchClone; 
+    /*Score*/ GameObject scoreDigit3, scoreDigit4, scoreDigit5, scoreDigit6; 
+    /*Sharpshooter*/ public GameObject sharpshooterText, superSharphooterText, blueScreen; 
+    /*Sharpshooter Clone*/ GameObject sharpshooterTextClone, superSharphooterTextClone, blueScreenClone;
+    /*Time*/ GameObject timeDigit1, timeDigit2;
+    /*Top*/ GameObject topDigit3, topDigit4, topDigit5, topDigit6;    
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // FUNCIONES DE INICIO                                                                      //
