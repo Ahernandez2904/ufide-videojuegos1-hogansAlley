@@ -71,10 +71,10 @@ MonoBehaviour:
     y: 30
     width: 1280
     height: 891
-  m_MinSize: {x: 678, y: 492}
-  m_MaxSize: {x: 12003, y: 14042}
+  m_MinSize: {x: 679, y: 342}
+  m_MaxSize: {x: 12004, y: 8042}
   vertical: 0
-  controlID: 37
+  controlID: 57
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -120,15 +120,15 @@ MonoBehaviour:
     y: 494
     width: 1280
     height: 397
-  m_MinSize: {x: 230, y: 271}
-  m_MaxSize: {x: 10000, y: 10021}
-  m_ActualView: {fileID: 15}
+  m_MinSize: {x: 100, y: 121}
+  m_MaxSize: {x: 4000, y: 4021}
+  m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 15}
   - {fileID: 20}
   - {fileID: 14}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -217,10 +217,10 @@ MonoBehaviour:
     y: 0
     width: 1280
     height: 891
-  m_MinSize: {x: 678, y: 492}
-  m_MaxSize: {x: 12003, y: 14042}
+  m_MinSize: {x: 679, y: 342}
+  m_MaxSize: {x: 12004, y: 8042}
   vertical: 1
-  controlID: 38
+  controlID: 58
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -243,10 +243,10 @@ MonoBehaviour:
     y: 0
     width: 1280
     height: 494
-  m_MinSize: {x: 678, y: 221}
-  m_MaxSize: {x: 12003, y: 4021}
+  m_MinSize: {x: 679, y: 221}
+  m_MaxSize: {x: 12004, y: 4021}
   vertical: 0
-  controlID: 39
+  controlID: 59
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -327,7 +327,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 123d0000
     m_LastClickedID: 15634
-    m_ExpandedIDs: 00000000a03c0000
+    m_ExpandedIDs: 00000000b03c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -355,7 +355,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000a03c0000
+    m_ExpandedIDs: 00000000b03c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -571,7 +571,7 @@ MonoBehaviour:
   m_ViewDataDictionary: {fileID: 0}
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 19796
+  m_LastSelectedObjectID: 15028
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -622,9 +622,9 @@ MonoBehaviour:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: aa3c0000
-    m_LastClickedID: 15530
-    m_ExpandedIDs: 00000000a03c000000ca9a3b
+    m_SelectedIDs: ba3c0000
+    m_LastClickedID: 15546
+    m_ExpandedIDs: 00000000b03c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -652,7 +652,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000a03c0000
+    m_ExpandedIDs: 00000000b03c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -745,7 +745,7 @@ MonoBehaviour:
     m_PrefName: Preview_InspectorPreview
   m_PreviewWindow: {fileID: 0}
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 0
+  m_LastVerticalScrollValue: 100
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -775,9 +775,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 62fbffff
+      m_SelectedIDs: b43a0000
+      m_LastClickedID: 15028
+      m_ExpandedIDs: 4cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -837,9 +837,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.20526558, y: 0.079490155, z: -16.772423}
+    m_Target: {x: 0.038254336, y: 1.4196439, z: -5.261854}
     speed: 2
-    m_Value: {x: -0.20526558, y: 0.079490155, z: -16.772423}
+    m_Value: {x: 0.038254336, y: 1.4196439, z: -5.261854}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -889,9 +889,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 5.723882
+    m_Target: 9.291395
     speed: 2
-    m_Value: 5.723882
+    m_Value: 9.291395
   m_Ortho:
     m_Target: 1
     speed: 2

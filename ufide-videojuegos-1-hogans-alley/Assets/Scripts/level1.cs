@@ -326,6 +326,7 @@ public class level1 : MonoBehaviour {
     }
 
     IEnumerator newRound() {
+        totalBadGuys = 0;
         guysPositions(); generateGuys(); generateRandomTime();
         audioManager.Play("move");
         areEntering = true; areLeaving = true;
@@ -342,10 +343,10 @@ public class level1 : MonoBehaviour {
         yield return new WaitForSeconds((float)randomTime);
         areInvincible = true;
         checkRound();
+        round++;
         if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
         if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
-        if (missed > 9 || round == 99) { updateRound(); updateMissed(); gameOver(); } else { StartCoroutine(newRound()); }
-        round++; totalBadGuys = 0;
+        if (missed > 9 || round == 99) { round--; updateRound(); updateMissed(); gameOver(); } else { StartCoroutine(newRound()); }
     }
 
     public void checkRound() {
