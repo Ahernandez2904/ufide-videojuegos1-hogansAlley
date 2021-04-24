@@ -48,7 +48,7 @@ public class level1 : MonoBehaviour {
         //gameOver();
     }
 
-    void FixedUpdate() {
+    void Update() {
         updateScore(); updateTopScore(); updateRound(); updateMissed(); updateTime(); shot();
         guysEnter(); guysLeave();
     }
@@ -72,7 +72,7 @@ public class level1 : MonoBehaviour {
                 //Debug.Log(hit.collider.gameObject.name); 
                 if (hit.collider.gameObject.tag == "Good") { goodGuyShot(hit); }
                 if (hit.collider.gameObject.tag == "Bad")  { badGuyShot(hit);  }
-            }
+            } audioManager.Play("shot");
         }
     }
 
