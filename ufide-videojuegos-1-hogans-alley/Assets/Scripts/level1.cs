@@ -334,6 +334,7 @@ public class level1 : MonoBehaviour {
         areEntering = false; areLeaving = false;
         idleAnimator();
         destroyOldGuys();
+        audioManager.Play("ready");
         yield return new WaitForSeconds(0.8f); /*Demole chance a que se den vuelta*/
         areInvincible = false;
         StartCoroutine(fastShot());
