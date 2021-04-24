@@ -18,13 +18,13 @@ public class level1 : MonoBehaviour {
 
     /*Valores principales*/ public int round = 1, score = 0, missed = 0, timetime; public static int top;
 
-    /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; double randomTime = 0.00;
+    /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; 
     /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F;
     /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true, stopWaiting = false;
     /*Guys*/ int totalBadGuys = 0; bool[] isBadGuy = {false, false, false}, isShot; string[] guy; 
     /*Score*/ bool[] wasFastShot = {false, false, false};
     /*Sharpshooter*/ public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
-    /*Tiempo*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; public float extraTime = 3f;
+    /*Tiempo*/ public float maxTime = 2.50f, minMaxTime = 1.30f, minTime = 0.60f, extraTime = 3f, randomTime = 0.00f;
     /*x round y miss digits*/ float r1x = 0.35f, r2x = -0.35f; float m1x = 1.1f, m2x = 0.7f;
     /*x score digits*/ float s3x = -3.55f, s4x = -3.95f, s5x = -4.35f, s6x = -4.75f;
     /*x time digits*/ float time1x = 0.4f, time2x = -0.4f;
@@ -168,7 +168,7 @@ public class level1 : MonoBehaviour {
         timetime = UnityEngine.Random.Range( Convert.ToInt32((maxTime*10)-10), Convert.ToInt32(maxTime*10) );
         randomTime = timetime/10;
         if (randomTime < minTime ) { randomTime = minTime; timetime = Convert.ToInt32(randomTime)*10; }
-        if (maxTime > minMaxTime) { maxTime = maxTime - 0.05; }
+        if (maxTime > minMaxTime) { maxTime = maxTime - 0.05f; }
         return timetime;
     }
 
@@ -340,7 +340,7 @@ public class level1 : MonoBehaviour {
         areInvincible = false;
         StartCoroutine(fastShot());
         yield return new WaitForSeconds(extraTime); /*Chance extra para que me de tiempo de reaccionar*/
-        yield return new WaitForSeconds((float)randomTime);
+        yield return new WaitForSeconds(randomTime);
         areInvincible = true;
         checkRound();
         round++;
