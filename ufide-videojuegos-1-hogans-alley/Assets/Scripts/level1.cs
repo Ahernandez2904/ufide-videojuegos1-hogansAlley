@@ -11,20 +11,27 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     AudioManagerController audioManager; AnimatorClipInfo[] currentClipInfo;
-    string[] guysAnimations = {"error","error","error"}; bool[] wasFastShot = {false, false, false};
-    int totalBadGuys = 0, randomNumberGuy; bool[] isBadGuy = {false, false, false}, isShot; string[] guy; 
-    float moveSpeed = 2F; public bool areEntering = false, areLeaving = false, areInvincible = true;
-    public int round = 1, score = 0, missed = 0, timetime; public static int top;  
-    public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
-    /*Tiempo y hasta donde puede bajar*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; public float extraTime = 3f;
-    /*Numeros aleatorios*/ int randomNumber = 0; int[] randomNumberGuyArr; double randomTime = 0.00;
-    /*Posiciones*/ float[] xPos = {-3.3f, 0f, 3.3f}; int xPosGuyStart = -6, xPosGuyEnd = 6, yPosMiss = -2; float yPosGuy =0.43f;
-    /*x de score digits*/ float s3x = -3.55f, s4x = -3.95f, s5x = -4.35f, s6x = -4.75f;
-    /*x de top digits*/ float top3x = 3.95f, top4x = 3.55f, top5x = 3.15f, top6x = 2.75f;
-    /*x de round y miss digits*/ float r1x = 0.35f, r2x = -0.35f; float m1x = 1.1f, m2x = 0.7f;
-    /*x de time digits*/ float time1x = 0.4f, time2x = -0.4f;
-    /*y de todos*/ float scoreY = -4.3f, topY = -4.3f, roundY = -4.15f, missY = -4.77f, timeY = 4.15f, missLabelY = -2f;
-    /*x y y de miss en gameover*/ float missYGO = 0.6f, m2xGO = 0.8f, m1xGO = 1.2f;
+
+    //Se esta usando public en vez de SerializedField ya que según mi investigación, sirven para lo mismo
+    //Aparte que con public se pueden ver desde otros lados del código
+    //Static permite conservar el valor durante la sesión de juego
+
+    /*Valores principales*/ public int round = 1, score = 0, missed = 0, timetime; public static int top;
+
+    /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; double randomTime = 0.00;
+    /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F;
+    /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true, stopWaiting = false;
+    /*Guys*/ int totalBadGuys = 0; bool[] isBadGuy = {false, false, false}, isShot; string[] guy; 
+    /*Score*/ bool[] wasFastShot = {false, false, false};
+    /*Sharpshooter*/ public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
+    /*Tiempo*/ public double maxTime = 2.50, minMaxTime = 1.30, minTime = 0.60; public float extraTime = 3f;
+    /*x round y miss digits*/ float r1x = 0.35f, r2x = -0.35f; float m1x = 1.1f, m2x = 0.7f;
+    /*x score digits*/ float s3x = -3.55f, s4x = -3.95f, s5x = -4.35f, s6x = -4.75f;
+    /*x time digits*/ float time1x = 0.4f, time2x = -0.4f;
+    /*x top digits*/ float top3x = 3.95f, top4x = 3.55f, top5x = 3.15f, top6x = 2.75f;
+    /*x/y goodguys/badguys*/ float[] xPos = {-3.3f, 0f, 3.3f}; int xPosGuyStart = -6, xPosGuyEnd = 6, yPosMiss = -2; float yPosGuy =0.43f;
+    /*x/y miss gameover*/ float missYGO = 0.6f, m2xGO = 0.8f, m1xGO = 1.2f;
+    /*y todos*/ float scoreY = -4.3f, topY = -4.3f, roundY = -4.15f, missY = -4.77f, timeY = 4.15f, missLabelY = -2f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // MIS GAMEOBJECTS                                                                          //
@@ -304,7 +311,7 @@ public class level1 : MonoBehaviour {
     /*Listo*/ public void destroyEdge() { Destroy(rightEdgeClone); Destroy(leftEdgeClone); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// EVENTOS                                                                                  //
+// EVENTOS DE RONDA                                                                         //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Lista*/ IEnumerator showRound1() {
@@ -332,8 +339,8 @@ public class level1 : MonoBehaviour {
         checkRound();
         if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
         if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
-        round++; totalBadGuys = 0;
         if (missed > 9 || round == 99) { updateRound(); updateMissed(); gameOver(); } else { StartCoroutine(newRound()); }
+        round++; totalBadGuys = 0;
     }
 
     public void checkRound() {
