@@ -48,7 +48,7 @@ public class level1 : MonoBehaviour {
         //gameOver();
     }
 
-    void Update() {
+    void FixedUpdate() {
         updateScore(); updateTopScore(); updateRound(); updateMissed(); updateTime(); shot();
         guysEnter(); guysLeave();
     }
@@ -128,7 +128,7 @@ public class level1 : MonoBehaviour {
 
     /*Listo*/ public void updateMissed() { 
         updateNumber(missDigit1, missed % 10);
-        if(missed > 9 && missDigit2 == null) { createSecondRoundNumber(); } if(missed > 9) { updateNumber(missDigit2, (missed / 10) % 10); }
+        if(missed > 9 && missDigit2 == null) { createSecondMissNumber(); } if(missed > 9) { updateNumber(missDigit2, (missed / 10) % 10); }
     }
 
     /*Listo*/ public void updateTime() { updateNumber(timeDigit1, timetime % 10); updateNumber(timeDigit2, (timetime / 10) % 10); }
@@ -306,7 +306,7 @@ public class level1 : MonoBehaviour {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Lista*/ IEnumerator showRound1() {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(5);
         //audioManager.StopAllAudio();
         Destroy(GameObject.Find("Round"));
         StartCoroutine(newRound());
@@ -332,7 +332,7 @@ public class level1 : MonoBehaviour {
         if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
         round++; if(round == 10) { createSecondRoundNumber(); }
         totalBadGuys = 0;
-        if (missed > 9 || round == 99) { gameOver(); } else { StartCoroutine(newRound()); }
+        if (missed > 9 || round == 99) { updateRound(); updateMissed(); gameOver(); } else { StartCoroutine(newRound()); }
     }
 
     public void checkRound() {
