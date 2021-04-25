@@ -19,9 +19,9 @@ public class level1 : MonoBehaviour {
     /*Valores principales*/ public int round = 1, score = 0, missed = 0, timetime; public static int top;
 
     /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; 
-    /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F;
+    /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F; string stageAnimation = "error";
     /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true, stopWaiting = false;
-    /*Guys*/ int totalBadGuys = 0; bool[] isBadGuy = {false, false, false}, isShot; string[] guy; 
+    /*Guys*/ int totalBadGuys = 0, badGuysMissed = 0; bool[] isBadGuy = {false, false, false}, isShot; string[] guy;
     /*Score*/ bool[] wasFastShot = {false, false, false};
     /*Sharpshooter*/ public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
     /*Tiempo*/ float maxTime = 2.50f, minMaxTime = 1.30f, minTime = 0.60f, extraTime = 3f, randomTime = 0.00f;
@@ -37,12 +37,13 @@ public class level1 : MonoBehaviour {
 // MIS GAMEOBJECTS                                                                          //
 //////////////////////////////////////////////////////////////////////////////////////////////    
 
-    /*Edge*/ public GameObject stage, leftEdge, rightEdge, missLabel; GameObject leftEdgeClone, rightEdgeClone;
+    /*Edge*/ public GameObject leftEdge, rightEdge; GameObject leftEdgeClone, rightEdgeClone;
     /*Guys*/ public GameObject GangA, GangB, GangC, Lady, Professor, Police; GameObject[] guys; 
     /*Miss Digit*/ GameObject missDigit1, missDigit2, missPatchClone; 
     /*Miss Digit (Game Over)*/ GameObject missDigit1GO, missDigit2GO;
     /*Numbers Clone*/ public GameObject greenNumber, whiteNumber, missPatch, roundPatch;
-    /*Round*/ GameObject roundDigit1, roundDigit2, roundPatchClone; 
+    /*Round*/ GameObject roundDigit1, roundDigit2, roundPatchClone;
+    /*Scenary*/ public GameObject missLabel, stage; GameObject[] missLabelArr = { null, null, null };
     /*Score*/ GameObject scoreDigit3, scoreDigit4, scoreDigit5, scoreDigit6; 
     /*Sharpshooter*/ public GameObject sharpshooterText, superSharphooterText, blueScreen; 
     /*Sharpshooter Clone*/ GameObject sharpshooterTextClone, superSharphooterTextClone, blueScreenClone;
@@ -81,15 +82,15 @@ public class level1 : MonoBehaviour {
             RaycastHit2D hit = Physics2D.Raycast(raycastPos, Vector2.zero);
             if(hit.collider!=null && areInvincible == false) { 
                 //Debug.Log(hit.collider.gameObject.name); 
-                if (hit.collider.gameObject.tag == "Good") { goodGuyShot(hit); }
-                if (hit.collider.gameObject.tag == "Bad")  { badGuyShot(hit);  }
+                if (hit.collider.gameObject.tag == "Good") { goodGuyShot(hit); return; }
+                if (hit.collider.gameObject.tag == "Bad")  { badGuyShot(hit);  return; }
             } audioManager.Play("shot");
         }
     }
 
     public void badGuyShot (RaycastHit2D hit) {
         hit.collider.gameObject.GetComponent<Animator>().Play("isShot");
-
+        audioManager.Play("hit");
     }
 
     public void goodGuyShot (RaycastHit2D hit) {
@@ -97,6 +98,7 @@ public class level1 : MonoBehaviour {
         stage.GetComponent<Animator>().Play("isRed");
         destroyEdge();
         areInvincible = true;
+        badGuysMissed++;
     }
 
     /*Listo*/ IEnumerator fastShot(){
@@ -108,17 +110,10 @@ public class level1 : MonoBehaviour {
         if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad")  { wasFastShot[2] = true; }
     } 
 
-    /*Listo*/ public void resetStage() { 
-        stage.GetComponent<Animator>().Play("isIdle"); 
-        createEdge(); 
-    }
-
-    public void resetWasFastShot() { 
-        wasFastShot[0] = false; wasFastShot[1] = false; wasFastShot[2] = false; 
-        }
+    public void resetWasFastShot() { wasFastShot[0] = false; wasFastShot[1] = false; wasFastShot[2] = false; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// FUNCIONES DE ACTUALIZAR DATOS                                                         u  //
+// ACTUALIZAR ANIMACIONES DE NÚMEROS                                                        //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Listo*/ public void updateScore() {
@@ -161,7 +156,7 @@ public class level1 : MonoBehaviour {
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// GENERACIÓN DE TIEMPO DE RESPUESTA Y ENEMIGOS                                             //
+// GENERACIÓN DE GOOD GUYS Y BAD GUYS                                                       //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Listo*/ public int generateRandomTime() {
@@ -260,6 +255,17 @@ public class level1 : MonoBehaviour {
         guysAnimations[2] = currentClipInfo[0].clip.name;
     }
 
+    public void missedBadGuy (int i) {
+        if (leftEdgeClone != null && rightEdge != null) { destroyEdge(); }
+        stage.GetComponent<Animator>().Play("isRed");
+        createMissLabel(i);
+        int j = (round-1)*3;
+        guys[i+j].GetComponent<Animator>().Play("isIdle");
+        audioManager.Play("fail");
+    }
+
+    public void updateAnimationInGameObject (GameObject go, string anim) { go.GetComponent<Animator>().Play(anim); }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // CREACIÓN DE GAMEOBJECTS                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,14 +297,21 @@ public class level1 : MonoBehaviour {
         roundDigit2.GetComponent<Animator>().Play("is1");
     }
 
-    /*Listo*/ public void createMiss(int i) {
-        GameObject missClone = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
+    /*Listo*/ public void createMissLabel(int i) {
+        missLabelArr[i] = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
+        missLabelArr[i].GetComponent<Animator>().Play("On");
     }
 
-    /*Listo*/ public void createGameOverMiss(){
+    public void destroyAllMissLabels() { 
+        if (missLabelArr[0] != null) { Destroy(missLabelArr[0]); }
+        if (missLabelArr[1] != null) { Destroy(missLabelArr[1]); }
+        if (missLabelArr[2] != null) { Destroy(missLabelArr[2]); }
+    }
+
+    /*Listo*/ public void createGameOverMiss() {
         missDigit1GO = Instantiate (whiteNumber, new Vector3 (m1xGO, missYGO, 0f), Quaternion.identity);
         missDigit2GO = Instantiate (whiteNumber, new Vector3 (m2xGO, missYGO, 0f), Quaternion.identity);
-        updateNumber(missDigit1GO, missed%10); updateNumber(missDigit2GO, (missed/10) %10); 
+        updateNumber(missDigit1GO, missed % 10); updateNumber(missDigit2GO, (missed / 10) % 10); 
     }
 
     /*Listo*/ public void dontDestroy() {
@@ -314,6 +327,12 @@ public class level1 : MonoBehaviour {
 
     /*Listo*/ public void destroyEdge() { Destroy(rightEdgeClone); Destroy(leftEdgeClone); }
 
+    /*Listo*/ public void resetStage() { 
+        currentClipInfo = stage.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        stageAnimation = currentClipInfo[0].clip.name;
+        if(stageAnimation == "isRed") { stage.GetComponent<Animator>().Play("isIdle"); createEdge(); destroyAllMissLabels(); }
+    }
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // EVENTOS DE RONDA                                                                         //
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +345,7 @@ public class level1 : MonoBehaviour {
     }
 
     IEnumerator newRound() {
-        totalBadGuys = 0;
+        totalBadGuys = 0; badGuysMissed = 0;
         guysPositions(); generateGuys(); generateRandomTime();
         audioManager.Play("move");
         areEntering = true; areLeaving = true;
@@ -336,54 +355,69 @@ public class level1 : MonoBehaviour {
         idleAnimator();
         destroyOldGuys();
         audioManager.Play("ready");
-        yield return new WaitForSeconds(0.8f); /*Demole chance a que se den vuelta*/
+        yield return new WaitForSeconds(0.8f); /*Tiempo para ejecutar animación*/
         areInvincible = false;
         StartCoroutine(fastShot());
-        yield return new WaitForSeconds(extraTime); /*Chance extra para que me de tiempo de reaccionar*/
-        yield return new WaitForSeconds(randomTime);
+        yield return new WaitForSeconds((float) extraTime + randomTime);
         areInvincible = true;
-        checkRound();
+        StartCoroutine(checkRound());
+        yield return new WaitForSeconds(0.85f); /*Tiempo para que se procese badGuysMissed*/
+        yield return new WaitForSeconds((3 * badGuysMissed) + 0.8f);
         round++;
         if (round == sharpshooterLevel)      { StartCoroutine(sharpshooter());      yield return new WaitForSeconds(5); }
         if (round == superSharpshooterLevel) { StartCoroutine(superSharpshooter()); yield return new WaitForSeconds(5); }
         if (missed > 9 || round == 99) { round--; updateRound(); updateMissed(); gameOver(); } else { StartCoroutine(newRound()); }
     }
 
-    public void checkRound() {
-        int i = (round-1)*3;
+    IEnumerator checkRound() {
+        int i = (round-1)*3; 
+
         updateGuysAnimations();
+        guys[i+0].GetComponent<Animator>().Play("isMoving");
+        guys[i+1].GetComponent<Animator>().Play("isMoving");
+        guys[i+2].GetComponent<Animator>().Play("isMoving");
+        yield return new WaitForSeconds(0.8f); /*Tiempo para ejecutar animación*/
 
         if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Good") { missed++; }
         if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Good") { missed++; }
         if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Good") { missed++; }
-        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad")  { missed++; }
-        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad")  { missed++; }
-        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad")  { missed++; }
 
-        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Bad")  { 
+        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Bad") {
             if(wasFastShot[0] == true) { score = score + 400; } score = score + 100; }
-        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Bad")  { 
+        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Bad") {
             if(wasFastShot[1] == true) { score = score + 400; } score = score + 100; }
-        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad")  { 
+        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad") {
             if(wasFastShot[2] == true) { score = score + 400; } score = score + 100; }
 
+        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad") { missed++; badGuysMissed++; }
+        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad") { missed++; badGuysMissed++; }
+        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad") { missed++; badGuysMissed++; }
+
+        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad") {
+            missedBadGuy(0); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+0],"isMoving"); }
+        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad") {
+            missedBadGuy(1); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+1],"isMoving"); }
+        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad") {
+            missedBadGuy(2); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+2],"isMoving"); }
+
         resetWasFastShot();
+        resetStage();
     }
 
     /*Listo*/ IEnumerator sharpshooter() {
-        sharpshooterTextClone = Instantiate(sharpshooterText); blueScreenClone = Instantiate(blueScreen); 
+        sharpshooterTextClone = Instantiate(sharpshooterText); blueScreenClone = Instantiate(blueScreen);
         audioManager.Play("sharpshooter");
         yield return new WaitForSeconds(5);
-        Destroy(sharpshooterTextClone); Destroy(blueScreenClone); 
+        Destroy(sharpshooterTextClone); Destroy(blueScreenClone);
     }
 
     /*Listo*/ IEnumerator superSharpshooter() {
-        sharpshooterTextClone = Instantiate(sharpshooterText); 
-        superSharphooterTextClone = Instantiate(superSharphooterText); 
-        blueScreenClone = Instantiate(blueScreen); 
+        sharpshooterTextClone = Instantiate(sharpshooterText);
+        superSharphooterTextClone = Instantiate(superSharphooterText);
+        blueScreenClone = Instantiate(blueScreen);
         audioManager.Play("sharpshooter");
         yield return new WaitForSeconds(5);
-        Destroy(sharpshooterTextClone); Destroy(superSharphooterTextClone); Destroy(blueScreenClone); 
+        Destroy(sharpshooterTextClone); Destroy(superSharphooterTextClone); Destroy(blueScreenClone);
     }
 
     public void gameOver() {
