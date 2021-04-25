@@ -20,21 +20,22 @@ public class level1 : MonoBehaviour {
 
     /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; 
     /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F; string stageAnimation = "error";
-    /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true, stopWaiting = false;
-    /*Guys*/ int totalBadGuys = 0, badGuysMissed = 0; bool[] isBadGuy = {false, false, false}, isShot; string[] guy;
+    /*Cronómetro*/ float timeAfterShootGoodGuy = 0, timerStart = 0; bool isTimerRunning = false, wasAGoodGuyShot = false;
+    /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true;
+    /*Guys*/ int totalBadGuys = 0, badGuysMissed = 0; bool[] isBadGuy = {false, false, false}, isShot; 
     /*Score*/ bool[] wasFastShot = {false, false, false};
     /*Sharpshooter*/ public int sharpshooterLevel = 15, superSharpshooterLevel = 30;
-    /*Tiempo*/ float maxTime = 2.50f, minMaxTime = 1.30f, minTime = 0.60f, extraTime = 3f, randomTime = 0.00f;
+    /*Tiempo*/ float maxTime = 2.50f, minMaxTime = 1.30f, minTime = 0.60f, extraTime = 0.5f, randomTime = 0.00f;
     /*x round y miss digits*/ float r1x = 0.35f, r2x = -0.35f; float m1x = 1.1f, m2x = 0.7f;
     /*x score digits*/ float s3x = -3.55f, s4x = -3.95f, s5x = -4.35f, s6x = -4.75f;
     /*x time digits*/ float time1x = 0.4f, time2x = -0.4f;
     /*x top digits*/ float top3x = 3.95f, top4x = 3.55f, top5x = 3.15f, top6x = 2.75f;
-    /*x/y goodguys/badguys*/ float[] xPos = {-3.3f, 0f, 3.3f}; int xPosGuyStart = -6, xPosGuyEnd = 6, yPosMiss = -2; float yPosGuy =0.43f;
+    /*x/y goodguys/badguys*/ float[] xPos = {-3.3f, 0f, 3.3f}; float yPosGuy =0.43f;
     /*x/y miss gameover*/ float missYGO = 0.6f, m2xGO = 0.8f, m1xGO = 1.2f;
     /*y todos*/ float scoreY = -4.3f, topY = -4.3f, roundY = -4.15f, missY = -4.77f, timeY = 4.15f, missLabelY = -2f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// MIS GAMEOBJECTS                                                                          //
+// GAMEOBJECTS ORIGINALES Y CLONES                                                          //
 //////////////////////////////////////////////////////////////////////////////////////////////    
 
     /*Edge*/ public GameObject leftEdge, rightEdge; GameObject leftEdgeClone, rightEdgeClone;
@@ -54,15 +55,11 @@ public class level1 : MonoBehaviour {
 // FUNCIONES DE INICIO                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void Start() {
-        createEdge(); createNumbers();
-        StartCoroutine (showRound1());
-        //gameOver();
-    }
+    void Start() { createEdge(); createNumbers(); StartCoroutine (showRound1()); }
 
     void Update() {
-        updateScore(); updateTopScore(); updateRound(); updateMissed(); updateTime(); shot();
-        guysEnter(); guysLeave();
+        updateScore(); updateTopScore(); updateRound(); updateMissed(); updateTime();
+        guysEnter(); guysLeave(); timer(); shot();
     }
 
     void Awake() {
@@ -81,8 +78,7 @@ public class level1 : MonoBehaviour {
             Vector2 raycastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(raycastPos, Vector2.zero);
             if(hit.collider!=null && areInvincible == false) { 
-                //Debug.Log(hit.collider.gameObject.name); 
-                if (hit.collider.gameObject.tag == "Good") { goodGuyShot(hit); return; }
+                if (hit.collider.gameObject.tag == "Good") { StartCoroutine(goodGuyShot(hit)); return; }
                 if (hit.collider.gameObject.tag == "Bad")  { badGuyShot(hit);  return; }
             } audioManager.Play("shot");
         }
@@ -93,12 +89,18 @@ public class level1 : MonoBehaviour {
         audioManager.Play("hit");
     }
 
-    public void goodGuyShot (RaycastHit2D hit) {
+    IEnumerator goodGuyShot (RaycastHit2D hit) {
         hit.collider.gameObject.GetComponent<Animator>().Play("isShot");
+        audioManager.Play("fail");
         stage.GetComponent<Animator>().Play("isRed");
-        destroyEdge();
-        areInvincible = true;
-        badGuysMissed++;
+        wasAGoodGuyShot = true; areInvincible = true;
+        destroyEdge(); stopTimer();
+        yield return new WaitForSeconds(0.01f);
+        updateGuysAnimations();
+        int i = (round-1)*3;
+        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Good") { missed++; createMissLabel(0); }
+        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Good") { missed++; createMissLabel(1); }
+        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Good") { missed++; createMissLabel(2); }
     }
 
     /*Listo*/ IEnumerator fastShot(){
@@ -156,7 +158,7 @@ public class level1 : MonoBehaviour {
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// GENERACIÓN DE GOOD GUYS Y BAD GUYS                                                       //
+// GENERADOR DE TIEMPO ALEATORIO Y CRONÓMETRO                                               //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
     /*Listo*/ public int generateRandomTime() {
@@ -167,11 +169,23 @@ public class level1 : MonoBehaviour {
         return timetime;
     }
 
+    public void timer() {
+        if(isTimerRunning) { timeAfterShootGoodGuy = timeAfterShootGoodGuy + Time.deltaTime;  }
+    }
+
+    public void restartTimer() { timeAfterShootGoodGuy = 0; isTimerRunning = true; wasAGoodGuyShot = false; }
+    
+    public void stopTimer() { isTimerRunning = false; }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// GENERACIÓN DE GOOD GUYS Y BAD GUYS                                                       //
+//////////////////////////////////////////////////////////////////////////////////////////////
+
     /*Listo*/ public void generateGoodGuy(int i) {
         randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
         /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy) || 
-        (isBadGuy[(i%3)-2] == false && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
-        (i%3==1 && (isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
+            (isBadGuy[(i%3)-2] == false && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
+            (i%3==1 && (isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
         /*Generate lady*/ if (randomNumberGuy == 0) { guys[i] = Instantiate(Lady, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
         /*Generate professor*/ if (randomNumberGuy == 1) { guys[i] = Instantiate(Professor, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
         /*Generate police*/ if (randomNumberGuy == 2) { guys[i] = Instantiate(Police, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
@@ -180,8 +194,8 @@ public class level1 : MonoBehaviour {
     /*Listo*/ public void generateBadGuy(int i) {
         randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
         /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy) || 
-        (isBadGuy[(i%3)-2] && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
-        (i%3==1 && (isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
+            (isBadGuy[(i%3)-2] && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
+            (i%3==1 && (isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy))) { generateBadGuy(i); return; }
         /*Generate Gang A*/ if (randomNumberGuy == 0) { guys[i] = Instantiate(GangA, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
         /*Generate Gang B*/ if (randomNumberGuy == 1) { guys[i] = Instantiate(GangB, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
         /*Generate Gang C*/ if (randomNumberGuy == 2) { guys[i] = Instantiate(GangC, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
@@ -358,9 +372,14 @@ public class level1 : MonoBehaviour {
         yield return new WaitForSeconds(0.8f); /*Tiempo para ejecutar animación*/
         areInvincible = false;
         StartCoroutine(fastShot());
-        yield return new WaitForSeconds((float) extraTime + randomTime);
-        areInvincible = true;
+        float totalTime = (float) extraTime + randomTime;
+        restartTimer();
+        yield return new WaitForSeconds(totalTime);
+        stopTimer();
+        float waitMore = 3 - (totalTime - timeAfterShootGoodGuy); if (waitMore < 0) { waitMore = 0; }
+        if (wasAGoodGuyShot) { yield return new WaitForSeconds(waitMore); }
         StartCoroutine(checkRound());
+        areInvincible = true;
         yield return new WaitForSeconds(0.85f); /*Tiempo para que se procese badGuysMissed*/
         yield return new WaitForSeconds((3 * badGuysMissed) + 0.8f);
         round++;
@@ -378,10 +397,6 @@ public class level1 : MonoBehaviour {
         guys[i+2].GetComponent<Animator>().Play("isMoving");
         yield return new WaitForSeconds(0.8f); /*Tiempo para ejecutar animación*/
 
-        if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Good") { missed++; }
-        if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Good") { missed++; }
-        if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Good") { missed++; }
-
         if(guysAnimations[0] == "isShot" && guys[i+0].tag == "Bad") {
             if(wasFastShot[0] == true) { score = score + 400; } score = score + 100; }
         if(guysAnimations[1] == "isShot" && guys[i+1].tag == "Bad") {
@@ -389,16 +404,16 @@ public class level1 : MonoBehaviour {
         if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Bad") {
             if(wasFastShot[2] == true) { score = score + 400; } score = score + 100; }
 
-        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad") { missed++; badGuysMissed++; }
-        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad") { missed++; badGuysMissed++; }
-        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad") { missed++; badGuysMissed++; }
+        if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad") { badGuysMissed++; }
+        if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad") { badGuysMissed++; }
+        if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad") { badGuysMissed++; }
 
         if(guysAnimations[0] == "isIdle" && guys[i+0].tag == "Bad") {
-            missedBadGuy(0); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+0],"isMoving"); }
+            missed++; missedBadGuy(0); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+0],"isMoving"); }
         if(guysAnimations[1] == "isIdle" && guys[i+1].tag == "Bad") {
-            missedBadGuy(1); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+1],"isMoving"); }
+            missed++; missedBadGuy(1); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+1],"isMoving"); }
         if(guysAnimations[2] == "isIdle" && guys[i+2].tag == "Bad") {
-            missedBadGuy(2); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+2],"isMoving"); }
+            missed++; missedBadGuy(2); yield return new WaitForSeconds(3); updateAnimationInGameObject(guys[i+2],"isMoving"); }
 
         resetWasFastShot();
         resetStage();
