@@ -378,8 +378,8 @@ public class level1 : MonoBehaviour {
         stopTimer();
         float waitMore = 3 - (totalTime - timeAfterShootGoodGuy); if (waitMore < 0) { waitMore = 0; }
         if (wasAGoodGuyShot) { yield return new WaitForSeconds(waitMore); }
-        StartCoroutine(checkRound());
         areInvincible = true;
+        StartCoroutine(checkRound());
         yield return new WaitForSeconds(0.85f); /*Tiempo para que se procese badGuysMissed*/
         yield return new WaitForSeconds((3 * badGuysMissed) + 0.8f);
         round++;
