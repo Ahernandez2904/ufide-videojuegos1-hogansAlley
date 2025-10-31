@@ -18,9 +18,9 @@ public class level1 : MonoBehaviour {
 
     /*Valores principales*/ public int round = 1, score = 0, missed = 0, timetime; public static int top;
 
-    /*Aleatorios*/ int randomNumber = 0, randomNumberGuy; int[] randomNumberGuyArr; 
+    /*Aleatorios*/ int randomNumberGuy; int[] randomNumberGuyArr; 
     /*Animaciones*/ string[] guysAnimations = {"error","error","error"}; float moveSpeed = 2F; string stageAnimation = "error";
-    /*Cronómetro*/ float timeAfterShootGoodGuy = 0, timerStart = 0; bool isTimerRunning = false, wasAGoodGuyShot = false;
+    /*Cronómetro*/ float timeAfterShootGoodGuy = 0; bool isTimerRunning = false, wasAGoodGuyShot = false;
     /*Estados*/ bool areEntering = false, areLeaving = false, areInvincible = true;
     /*Guys*/ int totalBadGuys = 0, badGuysMissed = 0; bool[] isBadGuy = {false, false, false}, isShot; 
     /*Score*/ bool[] wasFastShot = {false, false, false};
@@ -63,7 +63,7 @@ public class level1 : MonoBehaviour {
     }
 
     void Awake() {
-        audioManager = FindObjectOfType<AudioManagerController>();
+        audioManager = FindFirstObjectByType<AudioManagerController>();
         randomNumberGuyArr = new int[300];
         guys = new GameObject[300];
         isShot = new bool[300];
