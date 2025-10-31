@@ -103,7 +103,7 @@ public class level1 : MonoBehaviour {
         if(guysAnimations[2] == "isShot" && guys[i+2].tag == "Good") { missed++; createMissLabel(2); }
     }
 
-    /*Listo*/ IEnumerator fastShot(){
+    IEnumerator fastShot(){
         yield return new WaitForSeconds(1);
         updateGuysAnimations();
         int i = (round-1)*3;
@@ -118,32 +118,32 @@ public class level1 : MonoBehaviour {
 // ACTUALIZAR ANIMACIONES DE NÚMEROS                                                        //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Listo*/ public void updateScore() {
+    public void updateScore() {
         updateNumber(scoreDigit3, (score / 100) % 10);   updateNumber(scoreDigit4, (score / 1000) % 10); 
         updateNumber(scoreDigit5, (score / 10000) % 10); updateNumber(scoreDigit6, (score / 100000) % 10);
     }
 
-    /*Listo*/ public void updateTopScore() {
+    public void updateTopScore() {
         if (score > top) { top = score; }
         updateNumber(topDigit3, (top / 100) % 10);   updateNumber(topDigit4, (top / 1000) % 10);
         updateNumber(topDigit5, (top / 10000) % 10); updateNumber(topDigit6, (top / 100000) % 10);
     }
 
-    /*Listo*/ public void updateRound() {
+    public void updateRound() {
         updateNumber(roundDigit1, round % 10);
         if(round > 9 && roundDigit2 == null) { createSecondRoundNumber(); updateNumber(roundDigit2, (round / 10) % 10); } 
         if(round > 9) { updateNumber(roundDigit2, (round / 10) % 10); }
     }
 
-    /*Listo*/ public void updateMissed() { 
+    public void updateMissed() { 
         updateNumber(missDigit1, missed % 10);
         if(missed > 9 && missDigit2 == null) { createSecondMissNumber(); updateNumber(missDigit2, (missed / 10) % 10); } 
         if(missed > 9) { updateNumber(missDigit2, (missed / 10) % 10); }
     }
 
-    /*Listo*/ public void updateTime() { updateNumber(timeDigit1, timetime % 10); updateNumber(timeDigit2, (timetime / 10) % 10); }
+    public void updateTime() { updateNumber(timeDigit1, timetime % 10); updateNumber(timeDigit2, (timetime / 10) % 10); }
 
-    /*Listo*/ public void updateNumber(GameObject go, int i) {
+    public void updateNumber(GameObject go, int i) {
         if (i == 0) { go.GetComponent<Animator>().Play("is0"); }
         else if (i == 1) { go.GetComponent<Animator>().Play("is1"); }
         else if (i == 2) { go.GetComponent<Animator>().Play("is2"); }
@@ -161,7 +161,7 @@ public class level1 : MonoBehaviour {
 // GENERADOR DE TIEMPO ALEATORIO Y CRONÓMETRO                                               //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Listo*/ public int generateRandomTime() {
+    public int generateRandomTime() {
         timetime = UnityEngine.Random.Range( Convert.ToInt32((maxTime*10)-10), Convert.ToInt32(maxTime*10) );
         randomTime = (float) timetime/10;
         if (randomTime < minTime ) { randomTime = minTime; timetime = Convert.ToInt32(randomTime)*10; }
@@ -181,7 +181,7 @@ public class level1 : MonoBehaviour {
 // GENERACIÓN DE GOOD GUYS Y BAD GUYS                                                       //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Listo*/ public void generateGoodGuy(int i) {
+    public void generateGoodGuy(int i) {
         randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
         /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] == false && randomNumberGuyArr[i-1] == randomNumberGuy) || 
             (isBadGuy[(i%3)-2] == false && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
@@ -191,7 +191,7 @@ public class level1 : MonoBehaviour {
         /*Generate police*/ if (randomNumberGuy == 2) { guys[i] = Instantiate(Police, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
     }
 
-    /*Listo*/ public void generateBadGuy(int i) {
+    public void generateBadGuy(int i) {
         randomNumberGuy = UnityEngine.Random.Range(0,3); randomNumberGuyArr[i] = randomNumberGuy;
         /*No se repite*/ if ((i%3==2 && ((isBadGuy[(i%3)-1] && randomNumberGuyArr[i-1] == randomNumberGuy) || 
             (isBadGuy[(i%3)-2] && randomNumberGuyArr[i-2] == randomNumberGuy))) || 
@@ -201,13 +201,13 @@ public class level1 : MonoBehaviour {
         /*Generate Gang C*/ if (randomNumberGuy == 2) { guys[i] = Instantiate(GangC, new Vector3( xPos[i%3]-10, yPosGuy, 0.1f), Quaternion.identity); return; }
     }
 
-    /*Listo*/ public void generateGuys() {
+    public void generateGuys() {
         if (isBadGuy[0]) { generateBadGuy(((round-1)*3) + 0); } else { generateGoodGuy(((round-1)*3) + 0); }
         if (isBadGuy[1]) { generateBadGuy(((round-1)*3) + 1); } else { generateGoodGuy(((round-1)*3) + 1); }
         if (isBadGuy[2]) { generateBadGuy(((round-1)*3) + 2); } else { generateGoodGuy(((round-1)*3) + 2); }
     }
 
-    /*Listo*/ public void guysPositions () { 
+    public void guysPositions () { 
         for (int i = 0; i < 3; i++){ if (UnityEngine.Random.Range(0,2) == 0) { totalBadGuys++; isBadGuy[i] = true; } else { isBadGuy[i] = false; } }
         /*Si no hay bad guys, genera uno*/ if (totalBadGuys == 0) { isBadGuy[UnityEngine.Random.Range(0,3)] = true; totalBadGuys++; }
         /*Si hay tres bad guys, elimina uno*/ if (totalBadGuys == 3) { isBadGuy[UnityEngine.Random.Range(0,3)] = false; totalBadGuys--; }
@@ -284,7 +284,7 @@ public class level1 : MonoBehaviour {
 // CREACIÓN DE GAMEOBJECTS                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Listo*/ public void createNumbers() {
+    public void createNumbers() {
         /*1 Miss*/ missDigit1 = Instantiate (whiteNumber, new Vector3 (m1x, missY, 0f), Quaternion.identity);
         /*1 Round*/ roundDigit1 = Instantiate (greenNumber, new Vector3 (r1x, roundY, 0f), Quaternion.identity);
         /*1 Time*/ timeDigit1 = Instantiate (greenNumber, new Vector3 (time1x, timeY, 0f), Quaternion.identity);
@@ -299,19 +299,19 @@ public class level1 : MonoBehaviour {
         /*6 Score*/ topDigit6 = Instantiate (whiteNumber, new Vector3 (top6x, topY, 0f), Quaternion.identity);
     }
 
-    /*Listo*/ public void createSecondMissNumber() {
+    public void createSecondMissNumber() {
         /*2 Miss*/ missDigit2 = Instantiate (whiteNumber, new Vector3 (m2x, missY, 0f), Quaternion.identity);
         /*Esconde "="*/ missPatchClone = Instantiate(missPatch);
         /*Lo pone en valor 1.*/  missDigit2.GetComponent<Animator>().Play("is1");
     }
 
-    /*Listo*/ public void createSecondRoundNumber() {
+    public void createSecondRoundNumber() {
         roundDigit2 = Instantiate (greenNumber, new Vector3 (r2x, roundY, 0f), Quaternion.identity);
         roundPatchClone = Instantiate(roundPatch);
         roundDigit2.GetComponent<Animator>().Play("is1");
     }
 
-    /*Listo*/ public void createMissLabel(int i) {
+    public void createMissLabel(int i) {
         missLabelArr[i] = Instantiate (missLabel, new Vector3 (xPos[i], missLabelY, 0f), Quaternion.identity);
         missLabelArr[i].GetComponent<Animator>().Play("On");
     }
@@ -322,13 +322,13 @@ public class level1 : MonoBehaviour {
         if (missLabelArr[2] != null) { Destroy(missLabelArr[2]); }
     }
 
-    /*Listo*/ public void createGameOverMiss() {
+    public void createGameOverMiss() {
         missDigit1GO = Instantiate (whiteNumber, new Vector3 (m1xGO, missYGO, 0f), Quaternion.identity);
         missDigit2GO = Instantiate (whiteNumber, new Vector3 (m2xGO, missYGO, 0f), Quaternion.identity);
         updateNumber(missDigit1GO, missed % 10); updateNumber(missDigit2GO, (missed / 10) % 10); 
     }
 
-    /*Listo*/ public void dontDestroy() {
+    public void dontDestroy() {
         DontDestroyOnLoad(scoreDigit3); DontDestroyOnLoad(scoreDigit4); DontDestroyOnLoad(scoreDigit5); DontDestroyOnLoad(scoreDigit6);
         DontDestroyOnLoad(topDigit3); DontDestroyOnLoad(topDigit4); DontDestroyOnLoad(topDigit5); DontDestroyOnLoad(topDigit6);
         DontDestroyOnLoad(roundDigit1); if (roundDigit2 != null) { DontDestroyOnLoad(roundDigit2); DontDestroyOnLoad(roundPatchClone); }  
@@ -337,11 +337,11 @@ public class level1 : MonoBehaviour {
         DontDestroyOnLoad(missDigit1GO); DontDestroyOnLoad(missDigit2GO);
     }
 
-    /*Listo*/ public void createEdge() { rightEdgeClone = Instantiate(rightEdge); leftEdgeClone = Instantiate(leftEdge); }
+    public void createEdge() { rightEdgeClone = Instantiate(rightEdge); leftEdgeClone = Instantiate(leftEdge); }
 
-    /*Listo*/ public void destroyEdge() { Destroy(rightEdgeClone); Destroy(leftEdgeClone); }
+    public void destroyEdge() { Destroy(rightEdgeClone); Destroy(leftEdgeClone); }
 
-    /*Listo*/ public void resetStage() { 
+    public void resetStage() { 
         currentClipInfo = stage.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
         stageAnimation = currentClipInfo[0].clip.name;
         if(stageAnimation == "isRed") { stage.GetComponent<Animator>().Play("isIdle"); createEdge(); destroyAllMissLabels(); }
@@ -351,7 +351,7 @@ public class level1 : MonoBehaviour {
 // EVENTOS DE RONDA                                                                         //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*Lista*/ IEnumerator showRound1() {
+    IEnumerator showRound1() {
         yield return new WaitForSeconds(5);
         //audioManager.StopAllAudio();
         Destroy(GameObject.Find("Round"));
@@ -419,14 +419,14 @@ public class level1 : MonoBehaviour {
         resetStage();
     }
 
-    /*Listo*/ IEnumerator sharpshooter() {
+    IEnumerator sharpshooter() {
         sharpshooterTextClone = Instantiate(sharpshooterText); blueScreenClone = Instantiate(blueScreen);
         audioManager.Play("sharpshooter");
         yield return new WaitForSeconds(5);
         Destroy(sharpshooterTextClone); Destroy(blueScreenClone);
     }
 
-    /*Listo*/ IEnumerator superSharpshooter() {
+    IEnumerator superSharpshooter() {
         sharpshooterTextClone = Instantiate(sharpshooterText);
         superSharphooterTextClone = Instantiate(superSharphooterText);
         blueScreenClone = Instantiate(blueScreen);
