@@ -14,8 +14,8 @@ public class menu : MonoBehaviour {
     }
 
     public int position() {
-        if (Input.mousePosition.y >= 160) {return 0; }
-        else if (Input.mousePosition.y <= 120) {return 2; }
+        if (Input.mousePosition.y >= 160) { return 0; }
+        else if (Input.mousePosition.y <= 120) { return 2; }
         else { return 1; }
     }
 
@@ -26,7 +26,7 @@ public class menu : MonoBehaviour {
     }
 
     public void selectGame(int pos){
-        if (Input.GetMouseButtonDown(0) && pos == 0){
+        if (Input.GetMouseButtonDown(0) && pos == 0) {
             SceneManager.LoadScene("Level1");
         } 
         return;
